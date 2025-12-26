@@ -1,0 +1,60 @@
+trigger: 
+- main
+
+pool: Default
+
+stages:
+  - stage: TerraformInitAndPlan
+    displayName: TerraformInitAndPlan
+    jobs:
+      - job: TerraformInitAndPlan
+        displayName: TerraformInitAndPlan
+        steps:
+        - task: TerraformInstaller@1
+          inputs:
+            terraformVersion: 'latest'
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/parents_module'
+            backendServiceArm: 'madhu_spnew'
+            backendAzureRmResourceGroupName: 'madhu_rg'
+            backendAzureRmStorageAccountName: 'stgpoonam'
+            backendAzureRmContainerName: 'jhola'
+            backendAzureRmKey: 'terraform.tfstate'
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'plan'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/parents_module'
+            environmentServiceNameAzureRM: 'madhu_spnew'
+
+  - stage: terraformapply
+    displayName: terraformapply
+    jobs:
+      - job: terraformapply
+        displayName: terraformapply
+        steps:
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/parents_module'
+            backendServiceArm: 'madhu_spnew'
+            backendAzureRmResourceGroupName: 'madhu_rg'
+            backendAzureRmStorageAccountName: 'stgpoonam'
+            backendAzureRmContainerName: 'jhola'
+            backendAzureRmKey: 'terraform.tfstate'
+        - task: TerraformTask@5
+          inputs:
+            provider: 'azurerm'
+            command: 'apply'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/parents_module'
+            commandOptions: '-auto -approve'
+            environmentServiceNameAzureRM: 'madhu_spnew'
+
+  
+
+
+
